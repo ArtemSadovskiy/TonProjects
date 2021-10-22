@@ -1,0 +1,57 @@
+{
+	"ABI version": 2,
+	"version": "2.1",
+	"header": ["time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "addBuyer",
+			"inputs": [
+				{"name":"s","type":"string"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deleteBuyer",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"string[]"}
+			]
+		},
+		{
+			"name": "timestamp",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"timestamp","type":"uint32"}
+			]
+		},
+		{
+			"name": "queue",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"queue","type":"string[]"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"timestamp","type":"uint32"},
+		{"name":"queue","type":"string[]"}
+	]
+}

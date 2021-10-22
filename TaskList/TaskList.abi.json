@@ -1,0 +1,120 @@
+{
+	"ABI version": 2,
+	"version": "2.1",
+	"header": ["time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "newTask",
+			"inputs": [
+				{"name":"caseName","type":"string"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getQuantityOpenTasks",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"uint8"}
+			]
+		},
+		{
+			"name": "getListTask",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"string[]"}
+			]
+		},
+		{
+			"name": "getTask",
+			"inputs": [
+				{"name":"numberTask","type":"uint8"}
+			],
+			"outputs": [
+				{"name":"caseName","type":"string"},
+				{"name":"timeOfAddition","type":"uint256"},
+				{"name":"completionOfTheCase","type":"bool"}
+			]
+		},
+		{
+			"name": "deletTask",
+			"inputs": [
+				{"name":"numberTask","type":"uint8"}
+			],
+			"outputs": [
+				{"name":"value0","type":"string[]"}
+			]
+		},
+		{
+			"name": "taskCompleted",
+			"inputs": [
+				{"name":"numberTask","type":"uint8"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "listTask",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"caseName","type":"string"},{"name":"timeOfAddition","type":"uint256"},{"name":"completionOfTheCase","type":"bool"}],"name":"listTask","type":"map(uint8,tuple)"}
+			]
+		},
+		{
+			"name": "tasks",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"tasks","type":"string[]"}
+			]
+		},
+		{
+			"name": "numTasks",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"numTasks","type":"uint8[]"}
+			]
+		},
+		{
+			"name": "numberTask",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"numberTask","type":"uint8"}
+			]
+		},
+		{
+			"name": "size",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"size","type":"uint8"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"components":[{"name":"caseName","type":"string"},{"name":"timeOfAddition","type":"uint256"},{"name":"completionOfTheCase","type":"bool"}],"name":"listTask","type":"map(uint8,tuple)"},
+		{"name":"tasks","type":"string[]"},
+		{"name":"numTasks","type":"uint8[]"},
+		{"name":"numberTask","type":"uint8"},
+		{"name":"size","type":"uint8"}
+	]
+}
