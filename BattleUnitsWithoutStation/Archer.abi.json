@@ -1,0 +1,107 @@
+{
+	"ABI version": 2,
+	"version": "2.1",
+	"header": ["time", "expire"],
+	"functions": [
+		{
+			"name": "getAttackPower",
+			"inputs": [
+				{"name":"attackPow","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getPowerProtection",
+			"inputs": [
+				{"name":"powerProt","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "attack",
+			"inputs": [
+				{"name":"add","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getCurrentHealth",
+			"inputs": [
+				{"name":"health","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "acceptAttack",
+			"inputs": [
+				{"name":"attackPow","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getHelth",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"}
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "quantityLife",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"quantityLife","type":"uint256"}
+			]
+		},
+		{
+			"name": "powerProtection",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"powerProtection","type":"uint256"}
+			]
+		},
+		{
+			"name": "attackPower",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"attackPower","type":"uint256"}
+			]
+		},
+		{
+			"name": "attackAddress",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"attackAddress","type":"address"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"quantityLife","type":"uint256"},
+		{"name":"powerProtection","type":"uint256"},
+		{"name":"attackPower","type":"uint256"},
+		{"name":"attackAddress","type":"address"}
+	]
+}
