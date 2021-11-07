@@ -2,10 +2,10 @@ pragma ton-solidity >= 0.35.0;
 pragma AbiHeader expire;
 
 
-//import "Purchase.sol";
-//import "Interface.sol";
-//import "HasConstructorWithPubKey.sol";
-//import "ShoppingList.sol";
+import "Purchase.sol";
+import "Interface.sol";
+import "HasConstructorWithPubKey.sol";
+import "ShoppingList.sol";
 
 import "base/Terminal.sol";
 import "base/Debot.sol";
@@ -14,41 +14,6 @@ import "base/AddressInput.sol";
 import "base/Menu.sol";
 import "base/ConfirmInput.sol";
 import "base/Upgradable.sol";
-
-struct Purchase {
-    uint32 id;
-    string name;
-    uint32 quantity;
-    uint64 timeOfAdd;
-    bool isDone;
-    uint32 price;
-}
-
-struct SummaryPurchases {
-    uint32 quantityOfCompletedPurchases;
-    uint32 quantityOfPendingPurchases;
-    uint32 amountOfPaidPurchases;
-}
-
-abstract contract AShopping {
-   constructor(uint256 pubkey) public {}
-}
-
-interface InterfaceShoppingList {
-   function shoppingList() external; 
-}
-
-interface IMsig {
-   function sendTransaction(address dest, uint128 value, bool bounce, uint8 flags, TvmCell payload  ) external;
-}
-
-interface IShopping {
-   function getShoppingList() external returns (Purchase[] purchases);
-   function addPurchase(string name, uint32 quantity) external;
-   function deletePurchase(uint32 id) external;
-   function markAsPurchased(uint32 id, bool done) external;
-   function getSummary() external returns (SummaryPurchases);
-}
 
 
 abstract contract AShoppingListDebot is Debot, Upgradable{
@@ -81,10 +46,6 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
     function start() public override {
         Terminal.input(tvm.functionId(savePublicKey),"Please enter your public key",false);
     }
-
-
-
-
 
     function savePublicKey(string value) public {
         (uint res, bool status) = stoi("0x"+value);
@@ -121,12 +82,37 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         }
     }
 
+    function deploy() private view {
+            TvmCell image = tvm.insertPubkey(m_shopListCode, m_masterPubKey);
+            optional(uint256) none;
+            TvmCell deployMsg = tvm.buildExtMsg({
+                abiVer: 2,
+                dest: m_address,
+                callbackId: tvm.functionId(onSuccess),
+                onErrorId:  tvm.functionId(onErrorRepeatDeploy),    // Just repeat if something went wrong
+                expire: 0,
+                sign: true,
+                pubkey: none,
+                stateInit: image,
+                call: {AShopping, m_masterPubKey}
+            });
+            tvm.sendrawmsg(deployMsg, 1);
+    }
+
+    function onErrorRepeatDeploy(uint32 sdkError, uint32 exitCode) public view {
+        // check errors if needed.
+        sdkError;
+        exitCode;
+        deploy();
+    }
+
     function creditAccount(address value) public {
         m_msigAddress = value;
         optional(uint256) pubkey = 0;
         TvmCell empty;
         IMsig(m_msigAddress).sendTransaction{
             abiVer: 2,
+            extMsg: true,
             sign: true,
             pubkey: pubkey,
             time: uint64(now),
@@ -155,11 +141,11 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         creditAccount(m_msigAddress);
     }
 
-
     function _getSummary(uint32 answerId) private view {
         optional(uint256) none;
         IShopping(m_address).getSummary{
             abiVer: 2,
+            extMsg: true,
             sign: false,
             pubkey: none,
             time: uint64(now),
@@ -169,35 +155,11 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         }();
     }
 
-    function deploy() private view {
-            TvmCell image = tvm.insertPubkey(m_shopListCode, m_masterPubKey);
-            optional(uint256) none;
-            TvmCell deployMsg = tvm.buildExtMsg({
-                abiVer: 2,
-                dest: m_address,
-                callbackId: tvm.functionId(onSuccess),
-                onErrorId:  tvm.functionId(onErrorRepeatDeploy),    // Just repeat if something went wrong
-                expire: 0,
-                sign: true,
-                pubkey: none,
-                stateInit: image,
-                call: {AShopping, m_masterPubKey}
-            });
-            tvm.sendrawmsg(deployMsg, 1);
-    } 
-
-    function onErrorRepeatDeploy(uint32 sdkError, uint32 exitCode) public view {
-        // check errors if needed.
-        sdkError;
-        exitCode;
-        deploy();
-    }
-
     function setSummary(SummaryPurchases summary) public {
         m_summary = summary;
         _menu();
     }
-
+    
     function _menu() private {
         string sep = '----------------------------------------';
         Menu.select(
@@ -222,24 +184,26 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         Terminal.input(tvm.functionId(addPurchase_), "One line please:", false);
     }
 
-    function addPurchase_(string value)  public view {
+    function addPurchase_(string name, uint32 quantity)  public view {
         optional(uint256) pubkey = 0;
         IShopping (m_address).addPurchase{
                 abiVer: 2,
+                extMsg: true,
                 sign: true,
                 pubkey: pubkey,
                 time: uint64(now),
                 expire: 0,
                 callbackId: tvm.functionId(onSuccess),
                 onErrorId: tvm.functionId(onError)
-            }(value);
+            }(name, quantity);
     }
 
     function showPurchases(uint32 index) public view {
         index = index;
         optional(uint256) none;
-        IShopping(m_address).getPurchases{
+        IShopping(m_address).getShoppingList{
             abiVer: 2,
+            extMsg: true,
             sign: false,
             pubkey: none,
             time: uint64(now),
@@ -255,12 +219,12 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
             for (i = 0; i < purchases.length; i++) {
                 Purchase purchase = purchases[i];
                 string completed;
-                if (Purchase.isDone) {
+                if (purchase.isDone) {
                     completed = '✓';
                 } else {
                     completed = ' ';
                 }
-                Terminal.print(0, format("{} {}  \"{}\"  at {}", purchase.id, completed, purchase.text, purchase.createdAt));
+                Terminal.print(0, format("{} {}  \"{}\"  at {}", purchase.id, completed, purchase.name, purchase.timeOfAdd));
             }
         } else {
             Terminal.print(0, "Your shopping list is empty");
@@ -286,8 +250,9 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
 
     function updatePurchase__(bool value) public view {
         optional(uint256) pubkey = 0;
-        IShopping(m_address).updatePurchase{
+        IShopping(m_address).markAsPurchased{
                 abiVer: 2,
+                extMsg: true,
                 sign: true,
                 pubkey: pubkey,
                 time: uint64(now),
@@ -310,8 +275,9 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
     function delPurchase_(string value) public view {
         (uint256 num,) = stoi(value);
         optional(uint256) pubkey = 0;
-        IShopping(m_address).deleteTask{
+        IShopping(m_address).deletePurchase{
                 abiVer: 2,
+                extMsg: true,
                 sign: true,
                 pubkey: pubkey,
                 time: uint64(now),
@@ -320,5 +286,4 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
                 onErrorId: tvm.functionId(onError)
             }(uint32(num));
     }
-
 }

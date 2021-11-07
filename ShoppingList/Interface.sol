@@ -3,10 +3,6 @@ pragma AbiHeader expire;
 
 import "Purchase.sol";
 
-interface InterfaceShoppingList {
-   function shoppingList() external; 
-}
-
 interface IMsig {
    function sendTransaction(address dest, uint128 value, bool bounce, uint8 flags, TvmCell payload  ) external;
 }
