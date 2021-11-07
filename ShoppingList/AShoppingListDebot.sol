@@ -17,7 +17,6 @@ import "base/Upgradable.sol";
 
 
 abstract contract AShoppingListDebot is Debot, Upgradable{
-
     
     TvmCell m_shopListCode;
     address m_address;
@@ -47,11 +46,14 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         Terminal.input(tvm.functionId(savePublicKey),"Please enter your public key",false);
     }
 
+    function getRequiredInterfaces() public view override returns (uint256[] interfaces) {
+        return [ Terminal.ID, Menu.ID, AddressInput.ID, ConfirmInput.ID ];
+    }
+
     function savePublicKey(string value) public {
         (uint res, bool status) = stoi("0x"+value);
         if (status) {
             m_masterPubKey = res;
-
             Terminal.print(0, "Checking if you already have a shopping list ...");
             TvmCell deployState = tvm.insertPubkey(m_shopListCode, m_masterPubKey);
             m_address = address.makeAddrStd(0, tvm.hash(deployState));
@@ -123,10 +125,10 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
     }
 
     function waitBeforeDeploy() public  {
-        Sdk.getAccountType(tvm.functionId(checkIfStatusIs0), m_address);
+        Sdk.getAccountType(tvm.functionId(checkIfContractHasLoaded), m_address);
     }
 
-    function checkIfStatusIs0(int8 acc_type) public {
+    function checkIfContractHasLoaded(int8 acc_type) public {
         if (acc_type ==  0) {
             deploy();
         } else {
@@ -174,7 +176,7 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
                 MenuItem("Create new purchase","",tvm.functionId(addPurchase)),
                 MenuItem("Show purchases list","",tvm.functionId(showPurchases)),
                 MenuItem("Update purchase status","",tvm.functionId(updatePurchase)),
-                MenuItem("Delete purchase","",tvm.functionId(delPurchase))
+                MenuItem("Delete purchase","",tvm.functionId(deletePurchase))
             ]
         );
     }
@@ -248,7 +250,7 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         ConfirmInput.get(tvm.functionId(updatePurchase__),"Is this purchase completed?");
     }
 
-    function updatePurchase__(bool value) public view {
+    function updatePurchase__(uint32 price) public view {
         optional(uint256) pubkey = 0;
         IShopping(m_address).markAsPurchased{
                 abiVer: 2,
@@ -259,20 +261,20 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
                 expire: 0,
                 callbackId: tvm.functionId(onSuccess),
                 onErrorId: tvm.functionId(onError)
-            }(m_purchaseId, value);
+            }(m_purchaseId, price);
     }
 
-    function delPurchase(uint32 index) public {
+    function deletePurchase(uint32 index) public {
         index = index;
         if (m_summary.quantityOfCompletedPurchases + m_summary.quantityOfPendingPurchases > 0) {
-            Terminal.input(tvm.functionId(delPurchase_), "Enter purchase number:", false);
+            Terminal.input(tvm.functionId(deletePurchase_), "Enter purchase number:", false);
         } else {
             Terminal.print(0, "Sorry, you have no purchases to delete");
             _menu();
         }
     }
 
-    function delPurchase_(string value) public view {
+    function deletePurchase_(string value) public view {
         (uint256 num,) = stoi(value);
         optional(uint256) pubkey = 0;
         IShopping(m_address).deletePurchase{
@@ -285,5 +287,9 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
                 callbackId: tvm.functionId(onSuccess),
                 onErrorId: tvm.functionId(onError)
             }(uint32(num));
+    }
+
+    function onCodeUpgrade() internal override {
+        tvm.resetStorage();
     }
 }
