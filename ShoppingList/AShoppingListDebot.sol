@@ -19,6 +19,8 @@ import "base/Upgradable.sol";
 abstract contract AShoppingListDebot is Debot, Upgradable{
     
     TvmCell m_shopListCode;
+    TvmCell m_shopListData;
+    TvmCell m_shopListInit;
     address m_address;
     SummaryPurchases m_summary;
     uint32 m_purchaseId;
@@ -27,10 +29,12 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
     
     uint32 INITIAL_BALANCE =  200000000;  // Initial shoppingList contract balance
 
-    function setShopListCode(TvmCell code) public {
+    function setShopListCode(TvmCell code, TvmCell data) public {
         require(msg.pubkey() == tvm.pubkey(), 101);
         tvm.accept();
         m_shopListCode = code;
+        m_shopListData = data;
+        m_shopListInit = tvm.buildStateInit(m_shopListCode, m_shopListData);
     }
 
     function onError(uint32 sdkError, uint32 exitCode) public {
@@ -55,7 +59,8 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         if (status) {
             m_masterPubKey = res;
             Terminal.print(0, "Checking if you already have a shopping list ...");
-            TvmCell deployState = tvm.insertPubkey(m_shopListCode, m_masterPubKey);
+            //TvmCell deployState = tvm.insertPubkey(m_shopListCode, m_masterPubKey);
+            TvmCell deployState = tvm.insertPubkey(m_shopListInit, m_masterPubKey);
             m_address = address.makeAddrStd(0, tvm.hash(deployState));
             Terminal.print(0, format( "Info: your shopping list contract address is {}", m_address));
             Sdk.getAccountType(tvm.functionId(checkStatus), m_address);
@@ -85,7 +90,8 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
     }
 
     function deploy() private view {
-            TvmCell image = tvm.insertPubkey(m_shopListCode, m_masterPubKey);
+            //TvmCell image = tvm.insertPubkey(m_shopListCode, m_masterPubKey);
+            TvmCell image = tvm.insertPubkey(m_shopListInit, m_masterPubKey);
             optional(uint256) none;
             TvmCell deployMsg = tvm.buildExtMsg({
                 abiVer: 2,

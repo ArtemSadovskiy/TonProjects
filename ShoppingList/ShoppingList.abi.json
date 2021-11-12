@@ -1,0 +1,60 @@
+{
+	"ABI version": 2,
+	"header": ["time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"name":"pubkey","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getShoppingList",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"id","type":"uint32"},{"name":"name","type":"bytes"},{"name":"quantity","type":"uint32"},{"name":"timeOfAdd","type":"uint64"},{"name":"isDone","type":"bool"},{"name":"price","type":"uint32"}],"name":"purchases","type":"tuple[]"}
+			]
+		},
+		{
+			"name": "addPurchase",
+			"inputs": [
+				{"name":"name","type":"bytes"},
+				{"name":"quantity","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "deletePurchase",
+			"inputs": [
+				{"name":"id","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "markAsPurchased",
+			"inputs": [
+				{"name":"id","type":"uint32"},
+				{"name":"price","type":"uint32"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getSummary",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"quantityOfCompletedPurchases","type":"uint32"},{"name":"quantityOfPendingPurchases","type":"uint32"},{"name":"amountOfPaidPurchases","type":"uint32"}],"name":"summary","type":"tuple"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}
