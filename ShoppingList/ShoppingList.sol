@@ -1,11 +1,12 @@
 pragma ton-solidity >= 0.35.0;
 pragma AbiHeader expire;
+pragma AbiHeader pubkey;
 
 import "Purchase.sol";
 import "Interface.sol";
 import "HasConstructorWithPubKey.sol";
 
-contract ShoppingList {
+contract ShoppingList is IShopping{
 
     uint256 ownerPubkey;
     uint32 number;
@@ -23,31 +24,33 @@ contract ShoppingList {
         _;
     }
 
-    function getShoppingList() public view returns (Purchase[] purchases) {
+    function getShoppingList() override public returns (Purchase[] purchases) {
         for((uint32 id, Purchase purchase) : m_purchase) {
             purchases.push(Purchase(purchase.id, purchase.name, purchase.quantity, purchase.timeOfAdd, purchase.isDone, purchase.price));
         }
     }
 
-    function addPurchase(string name, uint32 quantity) public onlyOwner {
+    function addPurchase(string name, uint quantity) override public onlyOwner {
         tvm.accept();
         number ++;
         m_purchase[number] = Purchase(number, name, quantity, now, false, 0);
     }
 
-    function deletePurchase(uint32 id) public onlyOwner {
+    function deletePurchase(uint32 id) override public onlyOwner {
         require(m_purchase.exists(id), 102);
         tvm.accept();
         delete m_purchase[id];
     }
 
-    function markAsPurchased(uint32 id, uint32 price) public onlyOwner {
+    function markAsPurchased(uint32 id, uint32 price) override public onlyOwner {
         require(m_purchase.exists(id), 102);
         tvm.accept();
         m_purchase[id] = Purchase(id, m_purchase[id].name, m_purchase[id].quantity, now, true, price);
     }  
 
-    function getSummary() public view returns (SummaryPurchases summary) {
+    function getSummary() override public returns (SummaryPurchases summary) {
+        tvm.accept();
+        
         uint32 comletePurchase;
         uint32 pendinPurchase;
         uint32 amountPaidPurchases;

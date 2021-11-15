@@ -1,6 +1,6 @@
 {
 	"ABI version": 2,
-	"header": ["time", "expire"],
+	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
 			"name": "getDebotInfo",
@@ -48,7 +48,8 @@
 		{
 			"name": "setShopListCode",
 			"inputs": [
-				{"name":"code","type":"cell"}
+				{"name":"code","type":"cell"},
+				{"name":"data","type":"cell"}
 			],
 			"outputs": [
 			]

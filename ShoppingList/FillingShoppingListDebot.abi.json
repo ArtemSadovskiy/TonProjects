@@ -21,6 +21,13 @@
 			]
 		},
 		{
+			"name": "_menu",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "addingProduct",
 			"inputs": [
 				{"name":"index","type":"uint32"}
@@ -150,7 +157,7 @@
 			]
 		},
 		{
-			"name": "addPurchase",
+			"name": "addPurchases",
 			"inputs": [
 				{"name":"index","type":"uint32"}
 			],
@@ -160,8 +167,15 @@
 		{
 			"name": "addPurchase_",
 			"inputs": [
-				{"name":"name","type":"bytes"},
-				{"name":"quantity","type":"uint32"}
+				{"name":"value","type":"bytes"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "addPurchase__",
+			"inputs": [
+				{"name":"value","type":"bytes"}
 			],
 			"outputs": [
 			]
@@ -177,7 +191,7 @@
 		{
 			"name": "showPurchases_",
 			"inputs": [
-				{"components":[{"name":"id","type":"uint32"},{"name":"name","type":"bytes"},{"name":"quantity","type":"uint32"},{"name":"timeOfAdd","type":"uint64"},{"name":"isDone","type":"bool"},{"name":"price","type":"uint32"}],"name":"purchases","type":"tuple[]"}
+				{"components":[{"name":"id","type":"uint32"},{"name":"name","type":"bytes"},{"name":"quantity","type":"uint256"},{"name":"timeOfAdd","type":"uint64"},{"name":"isDone","type":"bool"},{"name":"price","type":"uint32"}],"name":"purchases","type":"tuple[]"}
 			],
 			"outputs": [
 			]

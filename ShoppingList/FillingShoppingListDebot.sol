@@ -17,14 +17,32 @@ contract FillingShoppingListDebot is AShoppingListDebot{
         publisher = "";
         key = "Filling Shopping List manager";
         author = "";
-        support = address.makeAddrStd(0, 0x66e01d6df5a8d7677d9ab2daf7f258f1e2a7fe73da5320300395f99e01dc3b5f);
+        support = address.makeAddrStd(0, 0x0cb9e72391abb5dc3c826cdca8df6571cc66e28cddf683592e2731c341b9cde3);
         hello = "Hi, i'm a Filling Shopping List DeBot.";
         language = "en";
         dabi = m_debotAbi.get();
     }
 
+    function _menu() override public {
+        string sep = '----------------------------------------';
+        Menu.select(
+            format(
+                "You have {}/{}/{} (to purchase/done purchase/total price) purchases",
+                    m_summary.quantityOfPendingPurchases,
+                    m_summary.quantityOfCompletedPurchases,
+                    m_summary.amountOfPaidPurchases
+            ),
+            sep,
+            [
+                MenuItem("Add new purchase","",tvm.functionId(addingProduct)),
+                MenuItem("Show purchases list","",tvm.functionId(displayingShoppinglist)),
+                MenuItem("Delete purchase","",tvm.functionId(deletePurchase))
+            ]
+        );
+    }
+
     function addingProduct(uint32 index) public {
-        addPurchase(index);
+        addPurchases(index);
     }
 
     function displayingShoppinglist(uint32 index) public {

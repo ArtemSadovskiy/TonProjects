@@ -1,6 +1,6 @@
 {
 	"ABI version": 2,
-	"header": ["time", "expire"],
+	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
 			"name": "constructor",
@@ -15,14 +15,14 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"id","type":"uint32"},{"name":"name","type":"bytes"},{"name":"quantity","type":"uint32"},{"name":"timeOfAdd","type":"uint64"},{"name":"isDone","type":"bool"},{"name":"price","type":"uint32"}],"name":"purchases","type":"tuple[]"}
+				{"components":[{"name":"id","type":"uint32"},{"name":"name","type":"bytes"},{"name":"quantity","type":"uint256"},{"name":"timeOfAdd","type":"uint64"},{"name":"isDone","type":"bool"},{"name":"price","type":"uint32"}],"name":"purchases","type":"tuple[]"}
 			]
 		},
 		{
 			"name": "addPurchase",
 			"inputs": [
 				{"name":"name","type":"bytes"},
-				{"name":"quantity","type":"uint32"}
+				{"name":"quantity","type":"uint256"}
 			],
 			"outputs": [
 			]

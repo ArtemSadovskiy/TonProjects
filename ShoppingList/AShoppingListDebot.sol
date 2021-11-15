@@ -1,5 +1,7 @@
 pragma ton-solidity >= 0.35.0;
 pragma AbiHeader expire;
+pragma AbiHeader time;
+pragma AbiHeader pubkey;
 
 
 import "Purchase.sol";
@@ -18,6 +20,7 @@ import "base/Upgradable.sol";
 
 abstract contract AShoppingListDebot is Debot, Upgradable{
     
+    string name;
     TvmCell m_shopListCode;
     TvmCell m_shopListData;
     TvmCell m_shopListInit;
@@ -75,7 +78,7 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
             _getSummary(tvm.functionId(setSummary));
 
         } else if (acc_type == -1)  { // acc is inactive
-            Terminal.print(0, "You don't have a shopping list list yet, so a new contract with an initial balance of 0.2 tokens will be deployed");
+            Terminal.print(0, "You don't have a shopping list yet, so a new contract with an initial balance of 0.2 tokens will be deployed");
             AddressInput.get(tvm.functionId(creditAccount),"Select a wallet for payment. We will ask you to sign two transactions");
 
         } else  if (acc_type == 0) { // acc is uninitialized
@@ -98,6 +101,7 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
                 dest: m_address,
                 callbackId: tvm.functionId(onSuccess),
                 onErrorId:  tvm.functionId(onErrorRepeatDeploy),    // Just repeat if something went wrong
+                time: 0,
                 expire: 0,
                 sign: true,
                 pubkey: none,
@@ -168,31 +172,19 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
         _menu();
     }
     
-    function _menu() private {
-        string sep = '----------------------------------------';
-        Menu.select(
-            format(
-                "You have {}/{}/{} (to purchase/done purchase/total price) purchases",
-                    m_summary.quantityOfPendingPurchases,
-                    m_summary.quantityOfCompletedPurchases,
-                    m_summary.amountOfPaidPurchases
-            ),
-            sep,
-            [
-                MenuItem("Create new purchase","",tvm.functionId(addPurchase)),
-                MenuItem("Show purchases list","",tvm.functionId(showPurchases)),
-                MenuItem("Update purchase status","",tvm.functionId(updatePurchase)),
-                MenuItem("Delete purchase","",tvm.functionId(deletePurchase))
-            ]
-        );
-    }
+    function _menu() virtual public {} 
 
-    function addPurchase(uint32 index)  public virtual{
-        index = index;
+    function addPurchases(uint32 index)  public{
         Terminal.input(tvm.functionId(addPurchase_), "One line please:", false);
     }
 
-    function addPurchase_(string name, uint32 quantity)  public view {
+    function addPurchase_(string value) public {
+        name = value;
+        Terminal.input(tvm.functionId(addPurchase__), "What quantity do you want to buy?", false);
+    }
+
+    function addPurchase__(string value)  public view {
+        (uint quantity,) = stoi(value);
         optional(uint256) pubkey = 0;
         IShopping (m_address).addPurchase{
                 abiVer: 2,
@@ -205,7 +197,7 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
                 onErrorId: tvm.functionId(onError)
             }(name, quantity);
     }
-
+    
     function showPurchases(uint32 index) public view {
         index = index;
         optional(uint256) none;
@@ -232,7 +224,7 @@ abstract contract AShoppingListDebot is Debot, Upgradable{
                 } else {
                     completed = ' ';
                 }
-                Terminal.print(0, format("{} {}  \"{}\"  at {}", purchase.id, completed, purchase.name, purchase.timeOfAdd));
+                Terminal.print(0, format("{} {}  \"{}\" {}  at {}", purchase.id, completed, purchase.name, purchase.quantity, purchase.timeOfAdd));
             }
         } else {
             Terminal.print(0, "Your shopping list is empty");

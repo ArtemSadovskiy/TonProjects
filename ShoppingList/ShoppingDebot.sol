@@ -17,10 +17,28 @@ contract ShoppingDebot is AShoppingListDebot{
         publisher = "";
         key = "Shoppin Debot manager";
         author = "";
-        support = address.makeAddrStd(0, 0x66e01d6df5a8d7677d9ab2daf7f258f1e2a7fe73da5320300395f99e01dc3b5f);
+        support = address.makeAddrStd(0, 0x0cb9e72391abb5dc3c826cdca8df6571cc66e28cddf683592e2731c341b9cde3);
         hello = "Hi, i'm a Shopping Debot.";
         language = "en";
         dabi = m_debotAbi.get();
+    }
+
+    function _menu() override public {
+        string sep = '----------------------------------------';
+        Menu.select(
+            format(
+                "You have {}/{}/{} (to purchase/done purchase/total price) purchases",
+                    m_summary.quantityOfPendingPurchases,
+                    m_summary.quantityOfCompletedPurchases,
+                    m_summary.amountOfPaidPurchases
+            ),
+            sep,
+            [
+                MenuItem("Show purchases list","",tvm.functionId(displayingShoppinglist)),
+                MenuItem("Update purchase status","",tvm.functionId(updatePurchase)),
+                MenuItem("Delete purchase","",tvm.functionId(deletePurchase))
+            ]
+        );
     }
 
     function displayingShoppinglist(uint32 index) public {
@@ -32,6 +50,6 @@ contract ShoppingDebot is AShoppingListDebot{
     }
 
     function makePurchase(uint32 index, uint32 price) public {
-        deletePurchase(index);
+        updatePurchase(index);
     }
 }

@@ -9,7 +9,7 @@ interface IMsig {
 
 interface IShopping {
    function getShoppingList() external returns (Purchase[] purchases);
-   function addPurchase(string name, uint32 quantity) external;
+   function addPurchase(string name, uint quantity) external;
    function deletePurchase(uint32 id) external;
    function markAsPurchased(uint32 id, uint32 price) external;
    function getSummary() external returns (SummaryPurchases);

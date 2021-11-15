@@ -4,7 +4,7 @@ pragma AbiHeader expire;
 struct Purchase {
     uint32 id;
     string name;
-    uint32 quantity;
+    uint quantity;
     uint64 timeOfAdd;
     bool isDone;
     uint32 price;
