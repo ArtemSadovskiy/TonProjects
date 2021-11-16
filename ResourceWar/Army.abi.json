@@ -1,0 +1,44 @@
+{
+	"ABI version": 2,
+	"header": ["time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "looting",
+			"inputs": [
+				{"name":"warehouse","type":"uint256[]"},
+				{"name":"capacityArmy","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"loot_","type":"uint256[]"}
+			]
+		},
+		{
+			"name": "sumArray",
+			"inputs": [
+				{"name":"list","type":"uint256[]"}
+			],
+			"outputs": [
+				{"name":"sum","type":"uint256"}
+			]
+		},
+		{
+			"name": "loot",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"loot","type":"uint256[]"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+	]
+}
